@@ -18,7 +18,7 @@ const compass_string = "mongodb://localhost:27017/cohort8_db";
 const atlas_string = "mongodb+srv://blaqdev123_db_user:Codingscience101@cluster0.ynhyyym.mongodb.net/cohort8_db?appName=Cluster0";
 
 // connecting the database to the project
-mongoose.connect(compass_string)
+mongoose.connect(atlas_string)
 .then(()=>console.log("MongoDb Connected"))
 .catch(err=> console.error("Connection Error: ", err))
 
