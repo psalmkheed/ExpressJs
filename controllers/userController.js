@@ -73,10 +73,12 @@ class UserController {
             });
 
             } catch (error) {
-                  return res.status(500).json({
+                  if(err.code === 1100){
+ return res.status(500).json({
                         message: error.message,
                         status: "error"
                   });
+                  }           
             }
       };
 
