@@ -73,7 +73,14 @@ class UserController {
             });
 
             } catch (error) {
-                  if(err.code === 1100){
+                  if(error.code === 11000){
+                        if (error.keyPattern?.email) {
+                              return res.status(409).json({
+                                    status: "error",
+                                    message: "Email address already exists"
+                              });
+                        }
+                  }
  return res.status(500).json({
                         message: error.message,
                         status: "error"
