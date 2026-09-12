@@ -2,6 +2,8 @@ const User = require("../models/userModel");
 
 const bcrypt = require('bcryptjs');
 
+const jwt = require("jsonwebtoken");
+
 class UserController {
 
       // create user profile
@@ -11,9 +13,11 @@ class UserController {
 
                   const hashedPassword = await bcrypt.hash(password, 12)
 
+                  const changeEmailCase = email.toLowerCase();
+
                   const user = await User.create({
                         name,
-                        email,
+                        email: changeEmailCase,
                         password: hashedPassword
                   });
 
@@ -55,15 +59,23 @@ class UserController {
                   const isMatch = await bcrypt.compare(password, user.password)
 
                   if (!isMatch) {
-                        return res.status(404).json({
-                              message: "Password is incorrect",
+                        return res.status(401).json({
+                              message: "Invalid email or password",
                               status: "error"
                         })
                   }
 
+                  const token = jwt.sign({
+                        userId: user._id,
+                        email: user.email
+                  }, process.env.JWT_SECRET,
+                        { expiresIn: process.env.JWT_EXPIRES_IN }
+                  );
+
                   return res.status(200).json({
                         message: "Login successful",
-                        status: "success"
+                        status: "success",
+                        token
                   })
 
             } catch (error) {
