@@ -1,5 +1,7 @@
 const User = require("../models/userModel");
 
+const bcrypt = require('bcryptjs');
+
 class UserController {
 
       // create user profile
@@ -7,34 +9,79 @@ class UserController {
             try {
                   const { name, email, password } = req.body;
 
+                  const hashedPassword = await bcrypt.hash(password, 12)
+
                   const user = await User.create({
                         name,
                         email,
-                        password
+                        password: hashedPassword
                   });
 
-                return res.status(201).json({
+                  return res.status(201).json({
                         message: "User created successfully",
                         status: "success",
                         data: user
                   });
 
             } catch (error) {
-                 return res.status(500).json({
+                  if (error.code === 11000 && error.keyPattern?.email) {
+
+                        return res.status(409).json({
+                              status: "error",
+                              message: "Email address already exists"
+                        });
+                  }
+                  return res.status(500).json({
                         message: error.message,
                         status: "error"
                   });
             }
       };
 
+      // user login
+      async loginUser(req, res) {
+            try {
+                  const { email, password } = req.body;
+
+                  const user = await User.findOne({ email });
+
+                  if (!user) {
+                        return res.status(404).json({
+                              message: "Account not found",
+                              status: "error"
+                        })
+                  }
+
+                  const isMatch = await bcrypt.compare(password, user.password)
+
+                  if (!isMatch) {
+                        return res.status(404).json({
+                              message: "Password is incorrect",
+                              status: "error"
+                        })
+                  }
+
+                  return res.status(200).json({
+                        message: "Login successful",
+                        status: "success"
+                  })
+
+            } catch (error) {
+                  return res.status(500).json({
+                        message: error.message,
+                        status: "error"
+                  })
+            }
+      }
+
       // get all users
       async getUsers(req, res) {
             try {
-                  const users = await User.find();
+                  const users = await User.find().select("-password");
 
-                  if (!users) {
-                        return res.status(400).json({
-                              message: "Users not found",
+                  if (users.length === 0) {
+                        return res.status(404).json({
+                              message: "No users found",
                               status: "error"
                         })
                   }
@@ -46,7 +93,7 @@ class UserController {
                   });
 
             } catch (error) {
-                 return res.status(500).json({
+                  return res.status(500).json({
                         message: error.message,
                         status: "error"
                   });
@@ -57,7 +104,7 @@ class UserController {
       // get user by their id
       async getUser(req, res) {
             try {
-                  const user = await User.findById(req.params.id);
+                  const user = await User.findById(req.params.id).select("-password");
 
                   if (!user) {
                         return res.status(404).json({
@@ -66,47 +113,48 @@ class UserController {
                         });
                   }
 
-            return res.status(200).json({
-                  message: "User fetched successfully",
-                  status: "success",
-                  data: user
-            });
+                  return res.status(200).json({
+                        message: "User fetched successfully",
+                        status: "success",
+                        data: user
+                  });
 
             } catch (error) {
-                        if(error.code === 11000){
-                              if (error.keyPattern?.email) {
-                              return res.status(409).json({
-                                    status: "error",
-                                    message: "Email address already exists"
-                              });
-                              }
-                        }
                   return res.status(500).json({
                         message: error.message,
                         status: "error"
                   });
-            }           
+            }
       };
-
       // edit and update user
       async updateUser(req, res) {
             try {
+                  const user = await User.findById(req.params.id).select("-password");
 
-                  const {name, email, password } = req.body;
-                  
-                  const user = await User.findByIdAndUpdate(req.params.id, {
-                        name,
-                        email,
-                        password
-                  }, { new: true });
-
-                  if (user) {
-                        return res.json({
-                              message: "User updated successfully",
-                              status: "success",
-                              data : user
-                        }).status(202)
+                  if (!user) {
+                        return res.status(404).json({
+                              message: "User not found",
+                              status: "error"
+                        });
                   }
+
+                  const { name, email, password } = req.body;
+
+                  user.name = name;
+                  user.email = email;
+
+                  if (password) {
+                        user.password = await bcrypt.hash(password, 12);
+                  }
+
+                  await user.save();
+
+                  return res.status(200).json({
+                        message: "User updated successfully",
+                        status: "success",
+                        data: user
+                  });
+
             } catch (error) {
                   return res.status(500).json({
                         message: error.message,

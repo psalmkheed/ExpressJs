@@ -2,6 +2,8 @@ const Product = require('../models/productModel');
 
 const User = require('../models/userModel');
 
+const cloudinary = require("../config/cloudinary");
+
 class ProductController {
       async uploadProduct(req, res) {
             try {
@@ -14,6 +16,17 @@ class ProductController {
                               status: "error"
                         });
                   }
+
+                  if(!req.file){
+                        return res.status(400).json({
+                              message : "Image is required, please upload an image"
+                        })
+                  }
+
+                  const result = await cloudinary.uploader.upload(req.file.path);
+
+                  const imageUrl = result.secure_url;
+
                   const product = await Product.create({
                         name,
                         description,
@@ -21,7 +34,7 @@ class ProductController {
                         category,
                         availability,
                         quantity,
-                        image
+                        image : imageUrl
                   });
 
                   await getUserID.products.push(product._id);
