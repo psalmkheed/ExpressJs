@@ -473,7 +473,7 @@
 
                   <div class="nav-title">Main</div>
 
-                  <a href="/dashboard.html" class="nav-link active">
+                  <a href="/dashboard" class="nav-link active">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <rect x="3" y="3" width="7" height="7"></rect>
                               <rect x="14" y="3" width="7" height="7"></rect>
@@ -926,13 +926,14 @@
             const token = localStorage.getItem("token");
 
             if (!token) {
-                  window.location.href = "/login.html";
+                  window.location.href = "/login";
             }
-
 
             /* =========================
                USER INFORMATION
             ========================= */
+
+
 
             const savedUser = localStorage.getItem("user");
 
@@ -983,7 +984,7 @@
                   localStorage.removeItem("token");
                   localStorage.removeItem("user");
 
-                  window.location.href = "/login.html";
+                  window.location.href = "/login";
 
             });
 
