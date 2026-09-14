@@ -1,10 +1,11 @@
 require("./config/db.js");
 const express = require('express');
 const cors = require("cors");
- 
+const path = require("path");
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+const authenticate = require("./auth/protectedRoute");
 
 app.use(cors());
 
@@ -15,19 +16,15 @@ const userRoutes = require('./routes/userRoutes');
 const studentRoutes = require('./routes/studentRoutes');
 const productRoutes = require('./routes/productRoutes');
 
-app.get('/', (req, res)=> {
-      try {
-            const userName = "Blacco";
-res.json({
-      message: "I am currently working",
-      status: "Success",
-      userName
-}, 200)
-      } catch (error) {
-            res.json({
-                  message: error.message
-            }).status(500)
-      }
+app.use(express.static(path.join(__dirname, "public")));
+app.get("/login", (req, res) => {
+      res.sendFile(path.join(__dirname, "public", "login.html"));
+});
+app.get("/register", (req, res) => {
+      res.sendFile(path.join(__dirname, "public", "register.html"));
+});
+app.get("/dashboard", authenticate, (req, res) => {
+      res.sendFile(path.join(__dirname, "public", "dashboard.html"));
 });
 
 app.use('/api/users', userRoutes);
