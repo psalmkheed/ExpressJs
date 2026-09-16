@@ -9,7 +9,14 @@ class UserController {
       // create user profile
       async createUser(req, res) {
             try {
-                  const { name, email, password } = req.body;
+                  const { name, username, email, password } = req.body;
+
+                  if (password.length < 8) {
+                        return res.status(401).json({
+                              message: "Password must be at least 8 characters long",
+                              status: "error"
+                        })
+                  }
 
                   const hashedPassword = await bcrypt.hash(password, 12)
 
@@ -17,6 +24,7 @@ class UserController {
 
                   const user = await User.create({
                         name,
+                        username,
                         email: changeEmailCase,
                         password: hashedPassword
                   });
@@ -28,12 +36,22 @@ class UserController {
                   });
 
             } catch (error) {
-                  if (error.code === 11000 && error.keyPattern?.email) {
+                  if (error.code === 11000) {
 
-                        return res.status(409).json({
-                              status: "error",
-                              message: "Email address already exists"
-                        });
+                        if (error.keyPattern?.email) {
+                              return res.status(409).json({
+                                    status: "error",
+                                    message: "Email address already exists"
+                              });
+                        }
+                        if (error.keyPattern?.username) {
+                              return res.status(409).json({
+                                    status: "error",
+                                    message: "Username address already exists"
+                              });
+                        }
+
+
                   }
                   return res.status(500).json({
                         message: error.message,
@@ -45,9 +63,14 @@ class UserController {
       // user login
       async loginUser(req, res) {
             try {
-                  const { email, password } = req.body;
+                  const { identifier, password } = req.body;
 
-                  const user = await User.findOne({ email });
+                  const user = await User.findOne({
+                        $or: [
+                              { email: identifier },
+                              { username: identifier }
+                        ]
+                  });
 
                   if (!user) {
                         return res.status(404).json({

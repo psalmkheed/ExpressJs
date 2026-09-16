@@ -711,7 +711,7 @@
 
                                     <h3>$18,420</h3>
                                     <p>Total Revenue</p>
-
+        
                               </div>
 
                         </div>
@@ -943,14 +943,14 @@
 
                         const user = JSON.parse(savedUser);
 
-                        const name = user.name || "User";
+                        const username = user.username || "User";
 
-                        document.getElementById("userName").textContent = name;
+                        document.getElementById("userName").textContent = username;
 
-                        document.getElementById("welcomeName").textContent = name;
+                        document.getElementById("welcomeName").textContent = username;
 
                         document.getElementById("avatar").textContent =
-                              name.charAt(0).toUpperCase();
+                              username.charAt(0).toUpperCase();
 
                   } catch (error) {
 

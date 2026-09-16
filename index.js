@@ -17,6 +17,7 @@ const studentRoutes = require('./routes/studentRoutes');
 const productRoutes = require('./routes/productRoutes');
 
 app.use(express.static(path.join(__dirname, "public")));
+
 app.get("/login", (req, res) => {
       res.sendFile(path.join(__dirname, "public", "login.html"));
 });
