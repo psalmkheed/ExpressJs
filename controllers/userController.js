@@ -20,12 +20,10 @@ class UserController {
 
                   const hashedPassword = await bcrypt.hash(password, 12)
 
-                  const changeEmailCase = email.toLowerCase();
-
                   const user = await User.create({
-                        name,
-                        username,
-                        email: changeEmailCase,
+                        name: name.trim(),
+                        username: username.trim().toLowerCase(),
+                        email: email.trim().toLowerCase(),
                         password: hashedPassword
                   });
 
@@ -63,7 +61,9 @@ class UserController {
       // user login
       async loginUser(req, res) {
             try {
-                  const { identifier, password } = req.body;
+                  const { password } = req.body;
+
+                  const identifier = req.body.identifier.trim().toLowerCase();
 
                   const user = await User.findOne({
                         $or: [
