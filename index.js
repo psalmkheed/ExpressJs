@@ -27,6 +27,9 @@ app.get("/register", (req, res) => {
 app.get("/dashboard", (req, res) => {
       res.sendFile(path.join(__dirname, "public", "dashboard.html"));
 });
+app.get("/dashboard/products", (req, res) => {
+      res.sendFile(path.join(__dirname, "public", "admin", "products.html"));
+});
 
 app.use('/api/users', userRoutes);
 app.use('/api/students', studentRoutes);

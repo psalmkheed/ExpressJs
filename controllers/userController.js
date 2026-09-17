@@ -70,7 +70,7 @@ class UserController {
                               { email: identifier },
                               { username: identifier }
                         ]
-                  });
+                  }).select("-password");
 
                   if (!user) {
                         return res.status(404).json({
