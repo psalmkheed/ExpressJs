@@ -1756,7 +1756,7 @@
                         const user = JSON.parse(localStorage.getItem("user"));
                         const userId = user._id;
                         const response = await fetch(
-                              `http://localhost:8888/api/products/create-product/${userId}`,
+                              `https://expressjs-n2cs.onrender.com/api/products/create-product/${userId}`,
                               {
                                     method: "POST",
 
