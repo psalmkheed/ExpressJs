@@ -45,7 +45,7 @@ class UserController {
                         if (error.keyPattern?.username) {
                               return res.status(409).json({
                                     status: "error",
-                                    message: "Username address already exists"
+                                    message: "Username already exists"
                               });
                         }
 
