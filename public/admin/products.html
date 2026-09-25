@@ -1600,13 +1600,11 @@
 
             });
 
-
             uploadArea.addEventListener("dragleave", () => {
 
                   uploadArea.classList.remove("dragover");
 
             });
-
 
             uploadArea.addEventListener("drop", (event) => {
 
@@ -1673,7 +1671,6 @@
 
                   event.preventDefault();
 
-
                   const image =
                         imageInput.files[0];
 
@@ -1688,12 +1685,6 @@
                         return;
 
                   }
-
-
-                  /*
-                        FormData is used because
-                        the request contains a real image file.
-                  */
 
                   const formData =
                         new FormData();
@@ -1748,11 +1739,6 @@
 
 
                   try {
-
-                        /*
-                              Change this URL to your
-                              actual product endpoint.
-                        */
                         const user = JSON.parse(localStorage.getItem("user"));
                         const userId = user._id;
                         const response = await fetch(
@@ -1769,10 +1755,8 @@
                               }
                         );
 
-
                         const data =
                               await response.json();
-
 
                         if (!response.ok) {
 
@@ -1782,7 +1766,6 @@
                               );
 
                         }
-
 
                         showMessage(
                               data.message ||
